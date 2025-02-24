@@ -111,6 +111,11 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+CSRF_TRUSTED_ORIGINS = [
+    "https://cp2project-production.up.railway.app",
+    "http://localhost:3000",  # For React, change port if needed
+    "http://127.0.0.1:8000",  # Django dev server
+]
 
 
 # Password validation
