@@ -18,6 +18,11 @@ services:
     environment:
       - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - POSTGRES_HOST=postgresql
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=moundher0987
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_PORT=5432
     volumes:
       - .:/app
       - postgres_data:/var/lib/postgresql/data
