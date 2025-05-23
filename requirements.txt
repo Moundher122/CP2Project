@@ -36,3 +36,4 @@ channels_redis==4.1.0
 uvicorn
 whitenoise>=6.2
 django_extensions
+django-admin-interface

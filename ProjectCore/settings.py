@@ -41,6 +41,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,6 +62,8 @@ INSTALLED_APPS = [
     'chat',
     'django_extensions',
 ]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -209,5 +213,12 @@ ELASTICSEARCH_DSL = {
 SUPABASE_URL = os.getenv('SUPABASE_URL')
 SUPABASE_KEY = os.getenv('SUPABASE_KEY')
 SUPABASE_BUCKET = os.getenv('SUPABASE_BUCKET')
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
+ADMIN_INTERFACE_SETTINGS = {
+    "THEME": "orange",
+    "SHOW_THEMES": True,
+    "MENU_OPEN_FIRST_CHILD": True,
+    "MENU_TITLE": "لوحة تحكم المستخدمين",
+}
 

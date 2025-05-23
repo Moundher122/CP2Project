@@ -47,6 +47,8 @@ class StudentSerializer(serializers.ModelSerializer):
     model = Student
     fields = ['education','gendre','description','skills','rating','category','cv','experience']
   def to_representation(self, instance):
+    if  isinstance(instance.skills[0],list) :
+     instance.skills = instance.skills[0]
     representation = super().to_representation(instance)
     return representation
   def create(self, validated_data):
@@ -59,6 +61,7 @@ class StudentSerializer(serializers.ModelSerializer):
             instance.education=education
         if cv:
             instance.cv=cv
+            
         instance.save()
         return super().update(instance, validated_data)
 
