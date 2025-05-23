@@ -783,7 +783,6 @@ class acc(APIView):
         if not jsondata:
          skills=json.loads(skills)
         dataentry['skills']=skills
-      print(dataentry)
       ser=serlaizers.UserStudentSerializer(user,data=dataentry,partial=True)
       if ser.is_valid():
        ser.save()
