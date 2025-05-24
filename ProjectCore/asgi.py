@@ -6,7 +6,7 @@ from django.core.asgi import get_asgi_application
 
 import chat.routing  # Replace 'chat' with your app name if different
 #from whitenoise import ASGIStaticFilesWrapper
-
+#to commit
 
 # Set up Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ProjectCore.settings')
