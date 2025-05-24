@@ -311,7 +311,7 @@ class googleauthforapp(APIView):
 
     try:
         decoded_token = None
-
+        print(token_id)
         # Try both client IDs (Web and App)
         for client_id in [WEB_CLIENT_ID, APP_CLIENT_ID]:
             try:
@@ -321,7 +321,6 @@ class googleauthforapp(APIView):
                 continue
         if decoded_token is None:
             return JsonResponse({"error": "Invalid token"}, status=400)
-        print('decoded_token',decoded_token)
         email = decoded_token.get('email')
         name = decoded_token.get('name')
         picture = decoded_token.get('picture')
@@ -340,10 +339,18 @@ class googleauthforapp(APIView):
                 "type": None
             }
         )
-        ser=serlaizers.UserStudentSerializer(user,data={'type':'Student'},partial=True)
-        if not ser.is_valid():
+        print(user)
+        print(user.student)
+        if  user.student==None:
+         ser=serlaizers.UserStudentSerializer(user,data={'type':'Student'},partial=True)
+         if not ser.is_valid():
           return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
-        ser.save()
+         ser.save()
+         print(ser.data)
+        else:
+           ser=serlaizers.UserStudentSerializer(user)
+           print(ser.data)
+        
         # Generate JWT tokens
         refresh = RefreshToken.for_user(user)
         return Response({
