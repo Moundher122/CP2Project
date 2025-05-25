@@ -624,9 +624,11 @@ class SearchUser(APIView):
         ids = [hit.meta.id for hit in search_results.hits]
         qs = User.objects.filter(id__in = ids).exclude(id=request.user.id)
 
-        if type is not None : 
-            qs = qs.filter(type=type)
-
+        normalized_type = type.capitalize()
+        if normalized_type in ['Student' ,'Company'] : 
+            qs = qs.filter(type=normalized_type)
+        else:
+            qs = qs.exclude(type='Admin')
         paginator = CustomPagination()
         paginated_qs = paginator.paginate_queryset(qs,request)
         ser = serializer.UserStudentSerializer(paginated_qs,many=True)
