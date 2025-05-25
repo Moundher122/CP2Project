@@ -26,7 +26,7 @@ class company(models.Model):
 
 class MCF(models.Model):
     user=models.ForeignKey("Auth.User", verbose_name=(""), on_delete=models.CASCADE,null=1)
-    token=models.CharField(max_length=500,unique=True)
+    token=models.CharField(max_length=500)
     def __str__(self):
         return self.token
     
