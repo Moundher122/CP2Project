@@ -984,7 +984,7 @@ class Fcm(APIView):
         ser=serlaizers.Fcmserlaizer(data=request.data)
         if ser.is_valid():
             ser.save()
-            ser.instance.user.add(user)
+            ser.instance.user.append(user)
             return Response({'suceffuly'})
         return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
 class logout(APIView):
@@ -1416,8 +1416,7 @@ class Try(APIView):
       token= request.data.get('token')
       response=tasks.send_fcm_notification(
           token,
-          "Test Notification",
-          "This is a test notification from the Django application."
+          "lalaa srx wshno dsaarraa",
+          "dsara ta3 shkepi."
       )
-      print(response)
       return Response({'message': 'Notification sent successfully'})

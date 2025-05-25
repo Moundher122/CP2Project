@@ -19,7 +19,7 @@ from drf_yasg import openapi
 from post.pagination import CustomPagination
 from Auth import tasks as tk
 import numpy as np
-from Auth.models import User,Notfications
+from Auth.models import User,Notfications,MCF
 from django.shortcuts import render
 import datetime
 # Create your views here.
@@ -414,6 +414,9 @@ class choose_app(APIView):
                          time=datetime.datetime.now(),
                          type="message"
                         )
+                     token=MCF.objects.filter(user=each1)
+                     if token.exists():
+                       tk.send_fcm_notification(token=token, title="Opportunity Accepted", body=f"You have been accepted for the opportunity '{post.title}' at {user.name}.")
                      each1.student.save()
              else :
                  each.student.student.experience+=[{'title':post.title,'company':user.name,'start':str(post.startdate),'end':str(post.enddate)}]
@@ -423,6 +426,9 @@ class choose_app(APIView):
                          time=datetime.datetime.now(),
                          type="message"
                  )
+                 token=MCF.objects.filter(user=each1)
+                 if token.exists():
+                  tk.send_fcm_notification(token=token, title="Opportunity Accepted", body=f"You have been accepted for the opportunity '{post.title}' at {user.name}.")
                  each.student.student.save()
          ser=serializer.application_serializer(app,many=True)
          return Response(ser.data)
