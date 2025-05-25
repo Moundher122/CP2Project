@@ -8,7 +8,7 @@ from post.pagination import CustomPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from chat.serializer import ChatSerializer,MessageSerializer
-from .models import Chat,Message
+from .models import Chat
 
 class RoomName(APIView):
     permission_classes = [IsAuthenticated]
