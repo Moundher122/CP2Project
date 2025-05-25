@@ -981,12 +981,14 @@ class Fcm(APIView):
     )
     def post(self,request):
         user=request.user
-        ser=serlaizers.Fcmserlaizer(data=request.data)
-        if ser.is_valid():
-            ser.save()
-            ser.instance.user.append(user)
-            return Response({'suceffuly'})
-        return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
+        token= request.data.get('token')
+        if not token:
+            return Response({'token is required'},status=status.HTTP_400_BAD_REQUEST)
+        try:
+         mod=models.MCF.objects.get_or_create(user=user,token=token, defaults={'user': user, 'token': token})
+         return Response({'suceffuly'})
+        except Exception as e:
+         return Response(str(e),status=status.HTTP_400_BAD_REQUEST)
 class logout(APIView):
       permission_classes=[IsAuthenticated]
       def delete(self,request):
