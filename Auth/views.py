@@ -4,7 +4,7 @@ from rest_framework import status
 from . import models
 from . import serlaizers
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from . import permissions
 from . import tasks
 from numpy import random
@@ -1406,6 +1406,7 @@ class notfi(APIView):
         return Response('deleted succefuly')
 
 class Try(APIView):
+   permission_classes=[AllowAny]
    def post(self,request):
       token= request.data.get('token')
       tasks.send_fcm_notification.delay(

@@ -136,34 +136,6 @@ class opportunity_crud(APIView):
             except models.Opportunity.DoesNotExist:
                 return Response({'post does not exist'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'you are not a company'}, status=status.HTTP_403_FORBIDDEN)
-    
-    @swagger_auto_schema(
-        operation_description="Delete an opportunity. This endpoint allows companies to remove their posted opportunities.",
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="JWT token", type=openapi.TYPE_STRING),
-            openapi.Parameter('id', openapi.IN_QUERY, description="Post ID", type=openapi.TYPE_INTEGER)
-        ],
-        
-        responses={
-            200: openapi.Response(description="Operation successful"),
-            201: openapi.Response(description="Created successfully"),
-            204: openapi.Response(description="Deleted successfully"),
-            400: 'Invalid data provided',
-            401: 'Unauthorized',
-            403: 'Forbidden',
-            404: 'Not found'
-        }
-    )
-    def delete(self, request,id):
-        user = request.user
-        if user.has_perm('Auth.company'):
-            try:
-                post = models.Opportunity.objects.filter(id=id, company=user).first()
-                post.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
-            except models.Opportunity.DoesNotExist:
-                return Response({'post does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'you are not a company'}, status=status.HTTP_403_FORBIDDEN)
 
 @swagger_auto_schema(
     operation_description="Get all teams for the authenticated student. This endpoint returns a list of teams that the student is a member of.",
@@ -858,6 +830,16 @@ class opp_by_id(APIView):
             return Response({"details" : "opportunity not found"},status=status.HTTP_404_NOT_FOUND)
         ser = serializer.opportunity_serializer(opp,many=False)
         return Response({"details" : "successful","data" : ser.data},status=status.HTTP_200_OK)
+    def delete(self, request,id):
+        user = request.user
+        if user.has_perm('Auth.company'):
+            try:
+                post = models.Opportunity.objects.filter(id=id, company=user).first()
+                post.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            except models.Opportunity.DoesNotExist:
+                return Response({'post does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'you are not a company'}, status=status.HTTP_403_FORBIDDEN)
     
     
 class opp_by_company(APIView):
