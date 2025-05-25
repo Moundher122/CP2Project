@@ -259,7 +259,6 @@ class GoogleAuthenticate(APIView):
             }               
             response = requests.post(token_url, data=data)
             token_data = response.json() 
-            
             if 'id_token' not in token_data:
                 return JsonResponse({"error": "Failed to get ID token"}, status=400)
             
@@ -994,7 +993,7 @@ class logout(APIView):
         user=request.user
         token = request.headers.get('token')
         try:
-            fcm=models.MCF.objects.get(user=user,token=token)
+            fcm=models.MCF.objects.get_or_create(user=user,token=token, defaults={'user': user, 'token': token})
             fcm.delete()
             return Response({'logout succefuly'})
         except models.MCF.DoesNotExist:

@@ -98,7 +98,7 @@ class applications(APIView):
                      c=np.random.randint(100000,999999)
                      cache.set(f"{email}_{ser.data['id']}",c, timeout=60*60*48)
                      cache.set(f"reverse:{c}",f"{email}_{ser.data['id']}", timeout=60*60*48)
-
+                     
                      tsk.sendemail.delay(
     message=(
     "You have been invited to participate in <strong>'{request_title}'</strong>, "
@@ -136,12 +136,11 @@ class applications(APIView):
     title="Request Approval Needed",
     user='moo'
 )
+                 
                  ser.instance.acceptedby.add(user)
                  post.applications.add(ser.data['id'])
                  return Response(ser.data)
              else :
-                #token=models.MCF.objects.get(user=user)
-                #tk.send_fcm_notification(token,'hi','hi')
                 if post.applications.filter(student=user).exists():
                     return Response({"You have already applied for this opportunity"}, status=status.HTTP_400_BAD_REQUEST) 
                 ser=serializer.application_serializer(data=data)
@@ -346,15 +345,18 @@ class company_app_management(APIView):
             post=Opportunity.objects.filter(company=user,id=id)
             app=models.Application.objects.filter(opportunities__in=post,approve=True)
             ser=serializer.application_serializer(app,many=True)
-            dataentry=ser.data
-            for each,i in dataentry,app:
-                if i.team:
-                    each['applicantName']=i.team.name
-                else :
-                    each['applicantName']=i.student.name
+            import copy
+            dataentry = copy.deepcopy(ser.data)
+            for i in range(len(dataentry)):
+                if app[i].team:
+                    dataentry[i]['applicantName'] = app[i].team.name
+                else:
+                 dataentry[i]['applicantName'] = app[i].student.name
+                dataentry[i]['appliedDate'] = app[i].createdate
             return Response(dataentry)
         except Exception as e:
-            return Response(e,status=status.HTTP_404_NOT_FOUND)
+            return Response({'error':str(e)},status=status.HTTP_404_NOT_FOUND)
+
 
 class choose_app(APIView):
     permission_classes=[IsAuthenticated,permissions.IsCompany]
@@ -394,12 +396,11 @@ class choose_app(APIView):
         },
         tags=['Applications']
     )
-    def post(self,request,id):
+    def put(self,request,id):
         ids=request.data.get('id',[])
         user=request.user
         try:
          post=Opportunity.objects.get(id=id,company=user)
-         all=post.applications.all()
          app=post.applications.filter(id__in=ids)
          app.update(status='accepted')
          for each in app:
@@ -408,14 +409,12 @@ class choose_app(APIView):
                      each1.student.experience+=[{'title':post.title,'company':user.name,'start':str(post.startdate),'end':str(post.enddate)}]
                      each1.student.save()
              else :
-                 each.student.student.experience+=[{'title':post.title,'company':user.name,'start':post.startdate,'end':post.enddate}]
+                 each.student.student.experience+=[{'title':post.title,'company':user.name,'start':str(post.startdate),'end':str(post.enddate)}]
                  each.student.student.save()
-         post.save()
          ser=serializer.application_serializer(app,many=True)
          return Response(ser.data)
         except Opportunity.DoesNotExist:
             return Response({'post does not exist'},status=status.HTTP_404_NOT_FOUND)
-
 class search(APIView):
     permission_classes=[IsAuthenticated]
     @swagger_auto_schema(
@@ -590,7 +589,6 @@ class rejectapplicant(APIView):
         user=request.user
         try:
          post=Opportunity.objects.get(id=id,company=user)
-         all=post.applications.all()
          app=post.applications.filter(id__in=ids)
          app.update(status='rejected')
          ser=serializer.application_serializer(app,many=True)
