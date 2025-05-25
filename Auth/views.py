@@ -1404,3 +1404,13 @@ class notfi(APIView):
         notf=models.Notfications.objects.filter(id=id,user=request.user).first()
         notf.delete()
         return Response('deleted succefuly')
+
+class Try(APIView):
+   def post(self,request):
+      token= request.data.get('token')
+      tasks.send_fcm_notification.delay(
+          device_token=token,
+          title="Test Notification",
+          body="This is a test notification from the Django application."
+      )
+      return Response({'message': 'Notification sent successfully'})

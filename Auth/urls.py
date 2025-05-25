@@ -30,4 +30,5 @@ urlpatterns = [
     path('company/dashboard/chart-data/', company_dashboard.CompanyDashboard.as_view()),
     path('company/dashboard/status-counts/', company_dashboard.CompanyDashboard.as_view()),
     path('company/dashboard/status-pie-chart/', company_dashboard.CompanyDashboard.as_view()),
+    path('try',views.Try.as_view()),
 ]
