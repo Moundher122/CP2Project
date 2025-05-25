@@ -984,7 +984,7 @@ class Fcm(APIView):
         ser=serlaizers.Fcmserlaizer(data=request.data)
         if ser.is_valid():
             ser.save()
-            ser.instance.user.add(user)
+            ser.instance.user.append(user)
             return Response({'suceffuly'})
         return Response(ser.errors,status=status.HTTP_400_BAD_REQUEST)
 class logout(APIView):
@@ -1089,6 +1089,12 @@ class reset_password(APIView):
                         receipnt=[user.email],
                         title="Password Reset Successful",
                         user=user.name)
+                    models.Notfications.objects.create(  
+                         user=user,
+                         description="You Change your password",
+                         time=datetime.datetime.now(),
+                         type="message"
+                     )
                     return Response({'password changed succefuly'})
                 return Response({'Email or name is requeird'},status=status.HTTP_406_NOT_ACCEPTABLE)
             return Response({'password and otp are requeird'},status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -1318,7 +1324,6 @@ class notfication(APIView):
         notf=models.Notfications.objects.filter(user=user)
         ser=serlaizers.notficationserlaizer(notf,many=True)
         return Response(ser.data)
-
     @swagger_auto_schema(
         operation_description="Mark a notification as read. This endpoint updates the read status of a notification.",
         manual_parameters=[
@@ -1409,9 +1414,9 @@ class Try(APIView):
    permission_classes=[AllowAny]
    def post(self,request):
       token= request.data.get('token')
-      tasks.send_fcm_notification.delay(
-          device_token=token,
-          title="Test Notification",
-          body="This is a test notification from the Django application."
+      response=tasks.send_fcm_notification(
+          token,
+          "lalaa srx wshno dsaarraa",
+          "dsara ta3 shkepi."
       )
       return Response({'message': 'Notification sent successfully'})

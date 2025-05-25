@@ -19,8 +19,9 @@ from drf_yasg import openapi
 from post.pagination import CustomPagination
 from Auth import tasks as tk
 import numpy as np
-from Auth.models import User
+from Auth.models import User,Notfications,MCF
 from django.shortcuts import render
+import datetime
 # Create your views here.
 class applications(APIView):
     permission_classes=[IsAuthenticated,permissions.IsStudent]
@@ -407,9 +408,27 @@ class choose_app(APIView):
              if each.team:
                  for each1 in each.team.students.all():
                      each1.student.experience+=[{'title':post.title,'company':user.name,'start':str(post.startdate),'end':str(post.enddate)}]
+                     Notfications.objects.create(
+                         user=each1,
+                         description=f"You have been accepted for the opportunity '{post.title}' at {user.name}.",
+                         time=datetime.datetime.now(),
+                         type="message"
+                        )
+                     token=MCF.objects.filter(user=each1)
+                     if token.exists():
+                       tk.send_fcm_notification(token=token, title="Opportunity Accepted", body=f"You have been accepted for the opportunity '{post.title}' at {user.name}.")
                      each1.student.save()
              else :
                  each.student.student.experience+=[{'title':post.title,'company':user.name,'start':str(post.startdate),'end':str(post.enddate)}]
+                 Notfications.objects.create(
+                         user=each.student,
+                         description=f"You have been accepted for the opportunity '{post.title}' at {user.name}.",
+                         time=datetime.datetime.now(),
+                         type="message"
+                 )
+                 token=MCF.objects.filter(user=each1)
+                 if token.exists():
+                  tk.send_fcm_notification(token=token, title="Opportunity Accepted", body=f"You have been accepted for the opportunity '{post.title}' at {user.name}.")
                  each.student.student.save()
          ser=serializer.application_serializer(app,many=True)
          return Response(ser.data)
